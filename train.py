@@ -1,11 +1,13 @@
 # System libs
 import os
 import time
+import matplotlib.pyplot as plt
 # import math
 import random
 import argparse
 from distutils.version import LooseVersion
 # Numerical libs
+import numpy as np
 import torch
 import torch.nn as nn
 # Our libs
@@ -16,6 +18,18 @@ from mit_semseg.utils import AverageMeter, parse_devices, setup_logger
 from mit_semseg.lib.nn import UserScatteredDataParallel, user_scattered_collate, patch_replication_callback
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter('runs/ade20k-resnet50dilated-ppm_deepsup_experiment_1')
+
+# helper function to show an image
+# (used in the `plot_classes_preds` function below)
+def matplotlib_imshow(img, one_channel=False):
+    if one_channel:
+        img = img.mean(dim=0)
+    img = img / 2 + 0.5     # unnormalize
+    npimg = img.numpy()
+    if one_channel:
+        plt.imshow(npimg, cmap="Greys")
+    else:
+        plt.imshow(np.transpose(npimg, (1, 2, 0)))
 
 # train one epoch
 def train(segmentation_module, iterator, optimizers, history, epoch, cfg):
@@ -196,6 +210,14 @@ def main(cfg, gpus):
 
     # Main loop
     history = {'train': {'epoch': [], 'loss': [], 'acc': []}}
+
+    # tensorboard check sample images
+    sample_data_dict = iterator_train.next()[0]
+    image = sample_data_dict['img_data']
+    label = sample_data_dict['seg_label']
+    matplotlib_imshow(image, label)
+    writer.add_image('sample_image', image)
+    writer.add_image('sample_label', image)
 
     for epoch in range(cfg.TRAIN.start_epoch, cfg.TRAIN.num_epoch):
         train(segmentation_module, iterator_train, optimizers, history, epoch+1, cfg)
