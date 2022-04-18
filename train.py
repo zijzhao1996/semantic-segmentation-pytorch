@@ -215,8 +215,9 @@ def main(cfg, gpus):
     sample_data_dict = iterator_train.next()[0]
     image = sample_data_dict['img_data']
     label = sample_data_dict['seg_label']
-    matplotlib_imshow(image, label)
+    matplotlib_imshow(image)
     writer.add_image('sample_image', image)
+    matplotlib_imshow(label)
     writer.add_image('sample_label', image)
 
     for epoch in range(cfg.TRAIN.start_epoch, cfg.TRAIN.num_epoch):
