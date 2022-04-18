@@ -28,6 +28,10 @@ class SegmentationModule(SegmentationModuleBase):
 
     def forward(self, feed_dict, *, segSize=None):
         # training
+        if torch.cuda.is_available():
+            feed_dict['img_data'] = feed_dict['img_data'].cuda()
+            if 'seg_label' in feed_dict.keys():
+                feed_dict['seg_label'] = feed_dict['seg_label'].cuda()
         if segSize is None:
             if self.deep_sup_scale is not None: # use deep supervision technique
                 (pred, pred_deepsup) = self.decoder(self.encoder(feed_dict['img_data'], return_feature_maps=True))

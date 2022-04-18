@@ -14,7 +14,8 @@ from mit_semseg.dataset import TrainDataset
 from mit_semseg.models import ModelBuilder, SegmentationModule
 from mit_semseg.utils import AverageMeter, parse_devices, setup_logger
 from mit_semseg.lib.nn import UserScatteredDataParallel, user_scattered_collate, patch_replication_callback
-
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter('runs/ade20k-resnet50dilated-ppm_deepsup_experiment_1')
 
 # train one epoch
 def train(segmentation_module, iterator, optimizers, history, epoch, cfg):
@@ -29,7 +30,7 @@ def train(segmentation_module, iterator, optimizers, history, epoch, cfg):
     tic = time.time()
     for i in range(cfg.TRAIN.epoch_iters):
         # load a batch of data
-        batch_data = next(iterator)
+        batch_data = next(iterator)[0]
         data_time.update(time.time() - tic)
         segmentation_module.zero_grad()
 
