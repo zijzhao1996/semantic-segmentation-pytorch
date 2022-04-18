@@ -84,7 +84,10 @@ def train(segmentation_module, iterator, optimizers, history, epoch, cfg):
             history['train']['epoch'].append(fractional_epoch)
             history['train']['loss'].append(loss.data.item())
             history['train']['acc'].append(acc.data.item())
-
+          
+            writer.add_scalar('training loss',
+                ave_total_loss.average(),
+                cur_iter)
 
 def checkpoint(nets, history, cfg, epoch):
     print('Saving checkpoints...')
@@ -215,10 +218,10 @@ def main(cfg, gpus):
     sample_data_dict = iterator_train.next()[0]
     image = sample_data_dict['img_data']
     label = sample_data_dict['seg_label']
-    matplotlib_imshow(image)
-    writer.add_image('sample_image', image)
-    matplotlib_imshow(label)
-    writer.add_image('sample_label', image)
+    # matplotlib_imshow(image)
+    # writer.add_image('sample_image', image)
+    # matplotlib_imshow(label)
+    # writer.add_image('sample_label', image)
 
     for epoch in range(cfg.TRAIN.start_epoch, cfg.TRAIN.num_epoch):
         train(segmentation_module, iterator_train, optimizers, history, epoch+1, cfg)
