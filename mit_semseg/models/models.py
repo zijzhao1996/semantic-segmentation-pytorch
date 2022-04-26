@@ -34,11 +34,14 @@ class SegmentationModule(SegmentationModuleBase):
             if 'seg_label' in feed_dict.keys():
                 feed_dict['seg_label'] = feed_dict['seg_label'].cuda()
         if segSize is None:
+            print(pred.shape)
             if self.deep_sup_scale is not None: # use deep supervision technique
                 (pred, pred_deepsup) = self.decoder(self.encoder(feed_dict['img_data'], return_feature_maps=True))
             else:
-                pred = self.decoder(self.encoder(feed_dict['img_data'], return_feature_maps=True))
-
+                pred = self.decoder(self.encoder(feed_dict['img_data'], return_feature_maps=True))  
+            
+            print('--------------')
+            print(pred.shape, feed_dict['seg_label'].shape)
             loss = self.crit(pred, feed_dict['seg_label'])
             if self.deep_sup_scale is not None:
                 loss_deepsup = self.crit(pred_deepsup, feed_dict['seg_label'])
