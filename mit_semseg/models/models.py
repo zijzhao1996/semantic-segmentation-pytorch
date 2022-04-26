@@ -28,6 +28,7 @@ class SegmentationModule(SegmentationModuleBase):
 
     def forward(self, feed_dict, *, segSize=None):
         # training
+        print(feed_dict['img_data'].shape, feed_dict['seg_label'].shape)
         if torch.cuda.is_available():
             feed_dict['img_data'] = feed_dict['img_data'].cuda()
             if 'seg_label' in feed_dict.keys():
